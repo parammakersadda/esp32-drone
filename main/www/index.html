@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Drone Controller</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+
+<h1>ESP32 Drone</h1>
+
+<button id="armButton" onclick="armDoubleTap()">
+    DISARMED
+</button>
+
+<span id="armHint">
+    Double tap to arm
+</span>
+
+<p>Throttle</p>
+
+<input 
+type="range"
+min="1000"
+max="2000"
+value="1000"
+id="slider">
+
+<span id="value">1000</span>
+
+<br><br>
+
+<a href="/config">Motor Configuration</a>
+<style>
+#armButton
+{
+    background-color: red;
+    color: white;
+    padding: 15px;
+    font-size: 20px;
+}
+
+#armHint
+{
+    margin-left: 10px;
+    color: gray;
+}
+</style>
+
+
+<script>
+
+const slider =
+document.getElementById("slider");
+
+const value =
+document.getElementById("value");
+
+
+slider.oninput = function()
+{
+    value.innerHTML=this.value;
+
+    fetch(
+        "/throttle?value="+this.value
+    );
+}
+
+
+let lastTap = 0;
+let armed = false;
+
+
+function armDoubleTap()
+{
+    let now = Date.now();
+
+
+    if(armed)
+    {
+        // Already armed: single tap disarms immediately
+        armed = false;
+
+        fetch("/arm?state=0");
+
+        updateArmButton();
+
+        return;
+    }
+
+
+    // Currently disarmed: require double tap to arm
+    if(now - lastTap < 500)
+    {
+        armed = true;
+
+        fetch("/arm?state=1");
+
+        updateArmButton();
+
+        lastTap = 0;
+        return;
+    }
+
+
+    lastTap = now;
+}
+
+
+
+function updateArmButton()
+{
+    let btn = document.getElementById("armButton");
+
+
+    if(armed)
+    {
+        btn.innerHTML = "ARMED";
+        btn.style.backgroundColor = "green";
+    }
+    else
+    {
+        btn.innerHTML = "DISARMED";
+        btn.style.backgroundColor = "red";
+    }
+}
+
+
+</script>
+
+</body>
+</html>

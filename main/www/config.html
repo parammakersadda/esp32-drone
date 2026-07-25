@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">  
+</head>
+
+<body>
+
+<h1>Motor Mapping</h1>
+
+
+<p>Test physical PWM channel</p>
+
+
+<button id="m0" onclick="toggleMotor(0)">
+PWM 0
+</button>
+
+<button id="m1" onclick="toggleMotor(1)">
+PWM 1
+</button>
+
+<button id="m2" onclick="toggleMotor(2)">
+PWM 2
+</button>
+
+<button id="m3" onclick="toggleMotor(3)">
+PWM 3
+</button>
+
+
+<style>
+.active {
+    background-color: green;
+    color:white;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 10px;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+button,
+input {
+    max-width: 100%;
+}
+
+</style>
+
+
+<h2>Set mapping</h2>
+
+
+<p>
+Logical Front Left =
+<input id="fl" value="0">
+</p>
+
+<p>
+Logical Front Right =
+<input id="fr" value="1">
+</p>
+
+<p>
+Logical Rear Left =
+<input id="rl" value="2">
+</p>
+
+<p>
+Logical Rear Right =
+<input id="rr" value="3">
+</p>
+
+
+<button onclick="save()">
+SAVE
+</button>
+
+
+
+<script>
+
+const TEST_THROTTLE = 1300;
+const IDLE_THROTTLE = 1000;
+
+let activeMotor = -1;
+
+
+function toggleMotor(m)
+{
+    if(activeMotor == m)
+    {
+        // stop test
+        fetch(
+            "/motor?motor=-1&value=" + IDLE_THROTTLE
+        );
+
+        activeMotor = -1;
+    }
+    else
+    {
+        // start test
+        fetch(
+            "/motor?motor=" + m + "&value=" + TEST_THROTTLE
+        );
+
+        activeMotor = m;
+    }
+
+    updateButtons();
+}
+
+
+function updateButtons()
+{
+    for(let i = 0; i < 4; i++)
+    {
+        let button = document.getElementById("m" + i);
+
+        if(i == activeMotor)
+        {
+            button.classList.add("active");
+        }
+        else
+        {
+            button.classList.remove("active");
+        }
+    }
+}
+
+function save()
+{
+    console.log("SAVE CLICKED");
+
+    fetch(
+        "/mapping?"
+        +
+        "fl="+fl.value
+        +
+        "&fr="+fr.value
+        +
+        "&rl="+rl.value
+        +
+        "&rr="+rr.value
+    )
+    .then(response => response.text())
+    .then(data => console.log(data));
+}
+
+window.onload = function()
+{
+    fetch("/get_config")
+    .then(r => r.json())
+    .then(c =>
+    {
+        fl.value = c.fl;
+        fr.value = c.fr;
+        rr.value = c.rr;
+        rl.value = c.rl;
+
+        console.log("Loaded config", c);
+    });
+};
+
+</script>
+
+
+</body>
+</html>
