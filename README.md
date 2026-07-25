@@ -4,7 +4,9 @@ Experimental ESP32-based drone controller firmware using the MPU6050 IMU sensor.
 
 ## About
 
-This project is a personal prototype flight-control experiment based on an ESP32 microcontroller and MPU6050 IMU. It is shared as a reference for learning, experimentation, and further development.
+This project is an experimental flight-control firmware prototype based on an ESP32 microcontroller and MPU6050 IMU sensor. It is provided as a reference for learning, experimentation, testing, and further development.
+
+![ESP32 drone](images/esp32-drone.jpg)
 
 ## Safety Notes
 
@@ -17,9 +19,9 @@ This project is a personal prototype flight-control experiment based on an ESP32
 
 This software is an experimental prototype and has not been validated as a reliable or safety-critical flight controller.
 
-The software is provided "as is", without warranty of any kind. The author makes no guarantees regarding reliability, performance, accuracy, or suitability for any particular purpose.
+The software is provided "as is", without warranty of any kind. No guarantees are made regarding reliability, performance, accuracy, or suitability for any particular purpose.
 
-The author is not responsible for damage, injury, crashes, property loss, or any other consequences resulting from the use, modification, or misuse of this software.
+No responsibility is accepted for damage, injury, crashes, property loss, or any other consequences resulting from the use, modification, or misuse of this software.
 
 Users are responsible for their own testing, evaluation, and safe operation of any hardware using this software.
 
