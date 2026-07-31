@@ -3,6 +3,7 @@
 #include "pwm.h"
 #include "motor_test.h"
 #include "flight_control.h"
+#include "battery.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -13,14 +14,12 @@
 
 static const char *TAG = "web";
 
-
 /*
  * HTML page
  */
 
 extern const unsigned char index_html_start[] asm("_binary_index_html_start");
 extern const unsigned char index_html_end[] asm("_binary_index_html_end");
-
 
 extern const unsigned char config_html_start[] asm("_binary_config_html_start");
 extern const unsigned char config_html_end[] asm("_binary_config_html_end");
@@ -64,7 +63,34 @@ static esp_err_t config_handler(httpd_req_t *req)
 
     return ESP_OK;
 }
+static esp_err_t battery_handler(httpd_req_t *req)
+{
+    char json[64];
 
+    float voltage = battery_get_voltage();
+    int percentage = battery_get_percentage();
+
+    snprintf(
+        json,
+        sizeof(json),
+        "{\"voltage\":%.2f,\"percentage\":%d}",
+        voltage,
+        percentage
+    );
+
+    httpd_resp_set_type(
+        req,
+        "application/json"
+    );
+
+    httpd_resp_send(
+        req,
+        json,
+        HTTPD_RESP_USE_STRLEN
+    );
+
+    return ESP_OK;
+}
 static esp_err_t disarm_handler(httpd_req_t *req)
 {
     armed = false;
@@ -558,6 +584,13 @@ static httpd_uri_t arm_uri =
     .handler = arm_handler,
     .user_ctx = NULL
 };
+static httpd_uri_t battery_uri =
+{
+    .uri="/battery",
+    .method=HTTP_GET,
+    .handler=battery_handler
+};
+
 
 void webserver_start(void)
 {
@@ -617,6 +650,10 @@ void webserver_start(void)
 	    server,
 	    &arm_uri
 	);
+	httpd_register_uri_handler(
+	    server,
+	    &battery_uri
+	);	
 
 	ESP_LOGI(
             TAG,

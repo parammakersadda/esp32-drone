@@ -3,6 +3,7 @@
 #include "webserver.h"
 #include "imu.h"
 #include "flight_control.h"
+#include "battery.h"
 
 #include "config.h"
 #include "nvs_flash.h"
@@ -21,7 +22,6 @@ void motor_task(void *arg)
 
     while(1)
     {
-
         if(last_arm_state != armed)
         {
             printf(
@@ -53,68 +53,12 @@ void motor_task(void *arg)
             throttle + drone_config.trim[REAR_LEFT] + corr_rl :
             1000;
 
-
         set_logical_motor(FRONT_LEFT, fl);
         set_logical_motor(FRONT_RIGHT, fr);
         set_logical_motor(REAR_RIGHT, rr);
         set_logical_motor(REAR_LEFT, rl);
 
-
         vTaskDelay(pdMS_TO_TICKS(20));
-    }
-}
-
-void correction_task(void *arg)
-{
-    while(1)
-    {
-        float pitch;
-        float roll;
-
-
-        imu_get_angle(
-            &pitch,
-            &roll
-        );
-
-
-        int correction = 10;
-
-
-        // Example:
-        // drone nose is down
-        if(pitch > 30)
-        {
-            runtime_correction[REAR_RIGHT] = correction;
-            runtime_correction[3] = correction;
-
-            runtime_correction[FRONT_LEFT] = -correction;
-            runtime_correction[FRONT_RIGHT] = -correction;
-        }
-
-
-        else if(pitch < -30)
-        {
-            runtime_correction[FRONT_LEFT] = correction;
-            runtime_correction[FRONT_RIGHT] = correction;
-
-            runtime_correction[REAR_RIGHT] = -correction;
-            runtime_correction[REAR_LEFT] = -correction;
-        }
-
-
-        else
-        {
-            runtime_correction[FRONT_LEFT] = 0;
-            runtime_correction[FRONT_RIGHT] = 0;
-            runtime_correction[REAR_RIGHT] = 0;
-            runtime_correction[REAR_LEFT] = 0;
-        }
-
-
-        vTaskDelay(
-            pdMS_TO_TICKS(10)
-        );
     }
 }
 
@@ -125,10 +69,11 @@ void app_main(void)
         nvs_flash_init()
     );
 
-
+    battery_init();
+    battery_set_cells(BATTERY_CELLS_NUMBER);
+    
     // Load motor mapping and trims
     config_load();
-
 
     wifi_init_softap();
 
@@ -146,7 +91,6 @@ void app_main(void)
 
     imu_calibrate();
 
-
     flight_control_start();
 
     xTaskCreate(
@@ -157,6 +101,4 @@ void app_main(void)
         5,
         NULL
     );
-
-
 }

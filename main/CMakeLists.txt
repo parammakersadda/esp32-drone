@@ -7,6 +7,7 @@ idf_component_register(
         "imu.c"
         "flight_control.c"
         "config.c"
+	"battery.c"
 
     INCLUDE_DIRS "."
 
@@ -22,4 +23,5 @@ idf_component_register(
         esp_driver_ledc
         esp_driver_i2c
 	esp_timer
+	esp_adc
 )

@@ -173,7 +173,6 @@ void pwm_set_motor(
         motor,
         duty);
 
-
     ledc_update_duty(
         LEDC_LOW_SPEED_MODE,
         motor);

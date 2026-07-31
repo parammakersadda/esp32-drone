@@ -10,9 +10,7 @@
 
 #include <math.h>
 
-
 #define TAG "IMU"
-
 
 #define I2C_PORT 0
 
@@ -173,9 +171,8 @@ bool imu_init(void)
         )
     );
 
+    printf("I2C scan start\n");
     i2c_scan();
-
-	printf("I2C scan start\n");
 
 	for(uint8_t addr = 1; addr < 127; addr++)
 	{

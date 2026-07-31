@@ -10,6 +10,15 @@
 <body>
 
 <h1>ESP32 Drone</h1>
+<h2>
+Battery:
+<span id="batteryPercent">--</span>%
+</h2>
+
+<p>
+Voltage:
+<span id="batteryVoltage">--</span>V
+</p>
 
 <button id="armButton" onclick="armDoubleTap()">
     DISARMED
@@ -108,8 +117,6 @@ function armDoubleTap()
     lastTap = now;
 }
 
-
-
 function updateArmButton()
 {
     let btn = document.getElementById("armButton");
@@ -126,7 +133,40 @@ function updateArmButton()
         btn.style.backgroundColor = "red";
     }
 }
+function updateBattery()
+{
+    fetch("/battery")
+    .then(response =>
+    {
+        if(!response.ok)
+            throw new Error("ESP32 not responding");
 
+        return response.json();
+    })
+	.then(data =>
+	{
+	    document.getElementById("batteryVoltage").innerHTML =
+		data.voltage.toFixed(2);
+
+	    document.getElementById("batteryPercent").innerHTML =
+		data.percentage;
+	})
+    .catch(error =>
+    {
+        document.getElementById("batteryVoltage").innerHTML =
+            "Not available";
+
+        document.getElementById("batteryPercent").innerHTML =
+            "Not available";
+    });
+}
+
+setInterval(
+    updateBattery,
+    1000
+);
+
+updateBattery();
 
 </script>
 
