@@ -1,0 +1,29 @@
+# Ignore everything
+*
+
+# Allow directories (needed for exceptions)
+!*/
+
+# this file
+!.gitignore
+
+# Root files
+!CMakeLists.txt
+!LICENSE
+!README.md
+!dependencies.lock
+!sdkconfig
+
+# Images
+!images/
+!images/esp32-drone.jpg
+
+# Main component
+!main/
+!main/CMakeLists.txt
+!main/*.c
+!main/*.h
+
+# Web files
+!main/www/
+!main/www/*.html
